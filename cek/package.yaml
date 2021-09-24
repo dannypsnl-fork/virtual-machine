@@ -1,48 +1,31 @@
-name:                cek
-version:             0.1.0.0
-github:              "dannypsnl/cek"
-license:             BSD3
-author:              "Lîm Tsú-thuàn"
-maintainer:          "dannypsnl@gmail.com"
-copyright:           "2021 Lîm Tsú-thuàn"
+name: cek
+version: 0.1.0.0
+github: "dannypsnl/cek"
+license: BSD3
+author: "Lîm Tsú-thuàn"
+maintainer: "dannypsnl@gmail.com"
+copyright: "2021 Lîm Tsú-thuàn"
 
 extra-source-files:
-- README.md
-- ChangeLog.md
+  - README.md
+  - ChangeLog.md
 
-# Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
-
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/dannypsnl/cek#readme>
+description: Please see the README on GitHub at <https://github.com/dannypsnl/virtual-machine/blob/develop/cek/README.md>
 
 dependencies:
-- base >= 4.7 && < 5
+  - base >= 4.7 && < 5
 
 library:
   source-dirs: src
 
-executables:
-  cek-exe:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - cek
-
 tests:
   cek-test:
-    main:                Spec.hs
-    source-dirs:         test
+    main: Spec.hs
+    source-dirs: test
     ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
     dependencies:
-    - cek
+      - cek
+      - hspec

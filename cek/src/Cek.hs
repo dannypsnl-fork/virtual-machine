@@ -1,4 +1,4 @@
-module Cek () where
+module Cek (Exp (..), Lambda (..), D (..), Kont (..), isFinal, evaluate) where
 
 type Var = String
 
@@ -23,27 +23,28 @@ data Kont
   | Fn (Lambda, Env, Kont)
 
 step :: Σ -> Σ
-step (Ref x, ρ, κ) =
-  (Lam lam, ρ', κ)
+step (Ref x, p, κ) =
+  (Lam lam, p', κ)
   where
-    Clo (lam, ρ') = ρ x
-step (f :@ e, ρ, κ) =
-  (f, ρ, Ar (e, ρ, κ))
-step (Lam lam, ρ, Ar (e, ρ', κ)) =
-  (e, ρ', Fn (lam, ρ, κ))
-step (Lam lam, ρ, Fn (x :=> e, ρ', κ)) =
-  (e, ρ' // [x ==> Clo (lam, ρ)], κ)
+    Clo (lam, p') = p x
+step (f :@ e, p, κ) =
+  (f, p, Ar (e, p, κ))
+step (Lam lam, p, Ar (e, p', κ)) =
+  (e, p', Fn (lam, p, κ))
+step (Lam lam, p, Fn (x :=> e, p', κ)) =
+  (e, p' // [x ==> Clo (lam, p)], κ)
+step _ = error "should never happened"
 
-terminal :: (Σ -> Σ) -> (Σ -> Bool) -> Σ -> Σ
-terminal step isFinal ς0
+terminal :: (Σ -> Σ) -> Σ -> Σ
+terminal step ς0
   | isFinal ς0 = ς0
-  | otherwise = terminal step isFinal (step ς0)
+  | otherwise = terminal step (step ς0)
 
 inject :: Program -> Σ
-inject e = (e, ρ0, Mt)
+inject e = (e, p0, Mt)
   where
-    ρ0 :: Env
-    ρ0 = \x -> error $ "no binding for " ++ x
+    p0 :: Env
+    p0 = \x -> error $ "no binding for " ++ x
 
 (==>) :: a -> b -> (a, b)
 (==>) x y = (x, y)
@@ -53,10 +54,11 @@ inject e = (e, ρ0, Mt)
   if x == x'
     then y
     else f x'
+(//) f _ x' = error "unknown case"
 
 isFinal :: Σ -> Bool
-isFinal (Lam _, ρ, Mt) = True
+isFinal (Lam _, p, Mt) = True
 isFinal _ = False
 
 evaluate :: Program -> Σ
-evaluate pr = terminal step isFinal (inject pr)
+evaluate pr = terminal step (inject pr)
